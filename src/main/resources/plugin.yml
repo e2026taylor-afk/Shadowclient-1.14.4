@@ -1,0 +1,35 @@
+name: QuietBoost
+version: ${project.version}
+main: dev.quietboost.QuietBoost
+api-version: "1.14"
+description: Small, mostly invisible performance tweaks.
+commands:
+  quietboost:
+    description: QuietBoost admin command
+    usage: /quietboost <reload|status|stealth>
+    aliases: [qb]
+    permission: quietboost.admin
+  sendhome:
+    description: Teleport the given player (or your haunt/possess target, or who you're looking at) to their spawn.
+    usage: /sendhome [player]
+  scare:
+    description: Flash a message in the center of a player's screen. Stealth admins only.
+    usage: /scare <player> <message>
+  haunt:
+    description: View a player through their own eyes. Stealth admins only.
+    usage: /haunt <player>
+  darkness:
+    description: Toggle the darkness zone at your location. Stealth admins only.
+    usage: /darkness
+  possess:
+    description: Toggle possession of your current haunt target. Stealth admins only.
+    usage: /possess
+  endhaunt:
+    description: End haunting/possession. Stealth admins only.
+    usage: /endhaunt
+permissions:
+  quietboost.admin:
+    default: op
+  quietboost.stealth:
+    description: Manage stealth admins (console always allowed)
+    default: false

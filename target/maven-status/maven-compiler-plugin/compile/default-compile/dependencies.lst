@@ -1,0 +1,17 @@
+classpath:C:\Users\e2026\.m2\repository\com\destroystokyo\paper\paper-api\1.14.4-R0.1-SNAPSHOT\paper-api-1.14.4-R0.1-SNAPSHOT.jar	1367936:1756580444000
+classpath:C:\Users\e2026\.m2\repository\commons-lang\commons-lang\2.6\commons-lang-2.6.jar	284220:1295216507000
+classpath:C:\Users\e2026\.m2\repository\com\google\code\findbugs\jsr305\1.3.9\jsr305-1.3.9.jar	33015:1251152902000
+classpath:C:\Users\e2026\.m2\repository\com\googlecode\json-simple\json-simple\1.1.1\json-simple-1.1.1.jar	23931:1332306693000
+classpath:C:\Users\e2026\.m2\repository\junit\junit\4.10\junit-4.10.jar	253160:1317323535000
+classpath:C:\Users\e2026\.m2\repository\org\hamcrest\hamcrest-core\1.1\hamcrest-core-1.1.jar	76643:1184785886000
+classpath:C:\Users\e2026\.m2\repository\com\google\guava\guava\21.0\guava-21.0.jar	2521113:1484248969000
+classpath:C:\Users\e2026\.m2\repository\com\google\code\gson\gson\2.8.0\gson-2.8.0.jar	231952:1477548162000
+classpath:C:\Users\e2026\.m2\repository\net\md-5\bungeecord-chat\1.13-SNAPSHOT\bungeecord-chat-1.13-SNAPSHOT.jar	82153:1758755062000
+classpath:C:\Users\e2026\.m2\repository\org\yaml\snakeyaml\1.23\snakeyaml-1.23.jar	301298:1535387061000
+classpath:C:\Users\e2026\.m2\repository\org\slf4j\slf4j-api\1.7.25\slf4j-api-1.7.25.jar	41203:1489682192000
+classpath:C:\Users\e2026\.m2\repository\org\ow2\asm\asm\7.1\asm-7.1.jar	114762:1551619264000
+classpath:C:\Users\e2026\.m2\repository\org\ow2\asm\asm-commons\7.1\asm-commons-7.1.jar	70394:1551619269000
+classpath:C:\Users\e2026\.m2\repository\org\ow2\asm\asm-tree\7.1\asm-tree-7.1.jar	50303:1551619273000
+classpath:C:\Users\e2026\.m2\repository\org\ow2\asm\asm-analysis\7.1\asm-analysis-7.1.jar	33379:1551619267000
+classpath:C:\Users\e2026\.m2\repository\org\apache\logging\log4j\log4j-core\2.8.1\log4j-core-2.8.1.jar	1402925:1488154282000
+classpath:C:\Users\e2026\.m2\repository\org\apache\logging\log4j\log4j-api\2.8.1\log4j-api-2.8.1.jar	228859:1488153247000

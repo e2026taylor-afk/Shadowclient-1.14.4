@@ -1,0 +1,17 @@
+name: QuietBoost
+version: 1.0.0
+main: dev.quietboost.QuietBoost
+api-version: "1.14"
+description: Small, mostly invisible performance tweaks.
+commands:
+  quietboost:
+    description: QuietBoost admin command
+    usage: /quietboost <reload|status|stealth>
+    aliases: [qb]
+    permission: quietboost.admin
+permissions:
+  quietboost.admin:
+    default: op
+  quietboost.stealth:
+    description: Manage stealth admins (console always allowed)
+    default: false

