@@ -26,7 +26,7 @@ import java.util.UUID;
  * SendHome / Scare / Haunt / Possess, driven either by /commands or by the
  * client mod's buttons over the "shadowclient:main" channel (see net.ShadowNetwork).
  */
-final class ShadowAbilities implements Listener {
+final public class ShadowAbilities implements Listener {
 
     private final QuietBoost plugin;
     private final StealthAdmin stealth;
