@@ -167,13 +167,7 @@ final class DarknessZone {
                 e.setBaby(false);
                 e.setCanPickupItems(false);
             });
-            // Hide from everyone except the one victim who should see it.
-            for (Player other : Bukkit.getOnlinePlayers()) {
-                if (!other.getUniqueId().equals(victim.getUniqueId())) {
-                    other.hideEntity(plugin, z);
-                }
-            }
-            spawned.add(z.getUniqueId());
+                        spawned.add(z.getUniqueId());
         }
         if (!spawned.isEmpty()) illusions.put(victim.getUniqueId(), spawned);
     }

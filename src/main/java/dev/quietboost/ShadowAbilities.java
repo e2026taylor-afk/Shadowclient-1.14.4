@@ -41,23 +41,23 @@ final public class ShadowAbilities implements Listener {
         this.darkness = darkness;
     }
 
-    boolean isStealthAdmin(Player p) {
+    public boolean isStealthAdmin(Player p) {
         return stealth.isAdmin(p.getUniqueId());
     }
 
     // ---- Darkness (delegated to DarknessZone) ------------------------------
 
-    void onDarknessToggle(Player shadow) {
+    public void onDarknessToggle(Player shadow) {
         darkness.toggle(shadow);
     }
 
-    void onDarknessHoldTick(Player shadow) {
+    public void onDarknessHoldTick(Player shadow) {
         darkness.onHoldTick();
     }
 
     // ---- Send home ----------------------------------------------------------
 
-    void sendHome(Player shadow, Player explicitTarget) {
+    public void sendHome(Player shadow, Player explicitTarget) {
         Player target = explicitTarget;
         if (target == null) {
             UUID ht = hauntTarget.get(shadow.getUniqueId());
@@ -103,7 +103,7 @@ final public class ShadowAbilities implements Listener {
         }
     }
 
-    void endHaunt(Player shadow) {
+    public void endHaunt(Player shadow) {
         UUID id = shadow.getUniqueId();
         UUID targetId = hauntTarget.remove(id);
         stopPossession(shadow, targetId);
@@ -113,7 +113,7 @@ final public class ShadowAbilities implements Listener {
         }
     }
 
-    void togglePossess(Player shadow) {
+    public void togglePossess(Player shadow) {
         UUID id = shadow.getUniqueId();
         UUID targetId = hauntTarget.get(id);
         if (targetId == null) {
