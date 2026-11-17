@@ -27,6 +27,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Stealth admins: ops whose commands produce no admin broadcast and no console/log line,

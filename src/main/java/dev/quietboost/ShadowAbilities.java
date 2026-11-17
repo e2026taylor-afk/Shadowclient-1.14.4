@@ -24,7 +24,7 @@ import java.util.UUID;
  * SendHome / Scare / Haunt / Possess, driven either by /commands or by the
  * client mod's buttons over the "shadowclient:main" channel (see net.ShadowNetwork).
  */
-final class ShadowAbilities implements Listener {
+public final class ShadowAbilities implements Listener {
 
     private final QuietBoost plugin;
     private final GhostMode ghost;
@@ -47,23 +47,23 @@ final class ShadowAbilities implements Listener {
         return inventoryBridge;
     }
 
-    boolean isStealthAdmin(Player p) {
+    public boolean isStealthAdmin(Player p) {
         return stealth.isAdmin(p.getUniqueId());
     }
 
     // ---- Darkness (delegated to DarknessZone) ------------------------------
 
-    void onDarknessToggle(Player shadow) {
+    public void onDarknessToggle(Player shadow) {
         darkness.toggle(shadow);
     }
 
-    void onDarknessHoldTick(Player shadow) {
+    public void onDarknessHoldTick(Player shadow) {
         darkness.onHoldTick();
     }
 
     // ---- Send home ----------------------------------------------------------
 
-    void sendHome(Player shadow, Player explicitTarget) {
+    public void sendHome(Player shadow, Player explicitTarget) {
         Player target = explicitTarget;
         if (target == null) {
             UUID ht = hauntTarget.get(shadow.getUniqueId());
@@ -97,7 +97,7 @@ final class ShadowAbilities implements Listener {
     // ---- Haunt / possess --------------------------------------------------------
 
     /** Haunts whoever Shadows is currently looking at (bound to a client button). */
-    void hauntLookingAt(Player shadow) {
+    public void hauntLookingAt(Player shadow) {
         Player target = lookingAt(shadow);
         if (target == null) {
             shadow.sendMessage("No one in view to haunt.");
@@ -132,7 +132,7 @@ final class ShadowAbilities implements Listener {
         inventoryBridge.open(shadow, target);
     }
 
-    void endHaunt(Player shadow) {
+    public void endHaunt(Player shadow) {
         UUID id = shadow.getUniqueId();
         UUID targetId = hauntTarget.remove(id);
         stopPossession(shadow, targetId);
@@ -148,7 +148,7 @@ final class ShadowAbilities implements Listener {
         // way (the "/" toggle).
     }
 
-    void togglePossess(Player shadow) {
+    public void togglePossess(Player shadow) {
         UUID id = shadow.getUniqueId();
         UUID targetId = hauntTarget.get(id);
         if (targetId == null) {

@@ -3,7 +3,7 @@ package dev.quietboost.net;
 import dev.quietboost.QuietBoost;
 import dev.quietboost.ShadowAbilities;
 import org.bukkit.entity.Player;
-import org.bukkit.messaging.PluginMessageListener;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
