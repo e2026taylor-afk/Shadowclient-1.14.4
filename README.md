@@ -77,6 +77,7 @@ admins only:
 
 ## ShadowClient (optional, not needed for tonight)
 ShadowClient/ is a Forge 1.14.4 source scaffold -- unbuilt, unverified, and
+stayed parked once Eaglercraft + chat commands covered everything without it,
 not compatible with an Eaglercraft client (Eaglercraft is a separate,
 browser-based reimplementation compiled from its own source via its own
 toolchain; a Forge mod jar can't run inside it). Since the commands above

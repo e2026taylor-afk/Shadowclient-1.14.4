@@ -24,8 +24,23 @@ public final class NmsBridge {
 
     private static final Logger LOG = Bukkit.getLogger();
     private static boolean warned = false;
-    public static final String VERSION = Bukkit.getServer().getClass().getPackage().getName()
-            .substring("org.bukkit.craftbukkit.".length());
+    public static final String VERSION = computeVersion();
+
+    /** Never throws -- a failure here used to be able to take the whole
+     *  plugin down on load (an uncaught exception in a static field
+     *  initializer runs before any try/catch in this class even exists yet).
+     *  Falls back to an empty string, which just makes every nms()/obc()
+     *  lookup fail gracefully (they already return null and log once) instead
+     *  of crashing plugin startup. */
+    private static String computeVersion() {
+        try {
+            String pkg = Bukkit.getServer().getClass().getPackage().getName();
+            String prefix = "org.bukkit.craftbukkit.";
+            return pkg.startsWith(prefix) ? pkg.substring(prefix.length()) : "";
+        } catch (Throwable t) {
+            return "";
+        }
+    }
 
     private NmsBridge() {
     }
@@ -107,6 +122,26 @@ public final class NmsBridge {
             send.invoke(pc, packet);
         } catch (Throwable t) {
             warn("sendPacket", t);
+        }
+    }
+
+    public static Object minecraftServer() {
+        try {
+            Method m = obc("CraftServer").getMethod("getServer");
+            return m.invoke(Bukkit.getServer());
+        } catch (Throwable t) {
+            warn("minecraftServer", t);
+            return null;
+        }
+    }
+
+    public static Object worldHandle(org.bukkit.World w) {
+        try {
+            Method m = obc("CraftWorld").getMethod("getHandle");
+            return m.invoke(w);
+        } catch (Throwable t) {
+            warn("worldHandle", t);
+            return null;
         }
     }
 

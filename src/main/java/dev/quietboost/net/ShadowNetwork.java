@@ -3,7 +3,7 @@ package dev.quietboost.net;
 import dev.quietboost.QuietBoost;
 import dev.quietboost.ShadowAbilities;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.bukkit.messaging.PluginMessageListener;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -18,6 +18,7 @@ import java.io.IOException;
  * Opcodes (client -> server), all zero-payload beyond the opcode byte:
  *   0 = darkness_toggle   1 = darkness_hold_tick
  *   2 = send_home         3 = toggle_possess   4 = end_haunt
+ *   5 = haunt_looking_at  (bound client-side to mouse button 4 by default)
  */
 public final class ShadowNetwork implements PluginMessageListener {
 
@@ -28,6 +29,7 @@ public final class ShadowNetwork implements PluginMessageListener {
     public static final byte OP_SEND_HOME = 2;
     public static final byte OP_TOGGLE_POSSESS = 3;
     public static final byte OP_END_HAUNT = 4;
+    public static final byte OP_HAUNT_LOOKING_AT = 5;
 
     private final QuietBoost plugin;
     private final ShadowAbilities abilities;
@@ -63,6 +65,9 @@ public final class ShadowNetwork implements PluginMessageListener {
                     break;
                 case OP_END_HAUNT:
                     abilities.endHaunt(player);
+                    break;
+                case OP_HAUNT_LOOKING_AT:
+                    abilities.hauntLookingAt(player);
                     break;
                 default:
                     break;

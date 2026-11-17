@@ -16,8 +16,8 @@ commands:
     description: Flash a message in the center of a player's screen. Stealth admins only.
     usage: /scare <player> <message>
   haunt:
-    description: View a player through their own eyes. Stealth admins only.
-    usage: /haunt <player>
+    description: View a player through their own eyes (or, with no name, whoever you are looking at). Stealth admins only.
+    usage: /haunt [player]
   darkness:
     description: Toggle the darkness zone at your location. Stealth admins only.
     usage: /darkness
@@ -27,6 +27,12 @@ commands:
   endhaunt:
     description: End haunting/possession. Stealth admins only.
     usage: /endhaunt
+  unban:
+    description: Unban a player. Available to any server operator.
+    usage: /unban <player>
+  ghostcreative:
+    description: Toggle Creative access (full item/container/creative-menu use, no noclip) while ghosting. Stealth admins only.
+    usage: /ghostcreative
 permissions:
   quietboost.admin:
     default: op

@@ -5,10 +5,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Zombie;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -23,17 +20,12 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * A persistent, toggleable area of "darkness" that Shadows drops at their
- * current chunk: anyone standing inside is kept blinded (Blindness stands in
- * for Darkness, which 1.14.4 doesn't have) and sees silent shadow-figures
- * that only they can see, placed as real entities in the world so they stay
- * put correctly as the victim looks around.
- *
- * The figures are stylised (a silent, AI-less, nameless Zombie) rather than
- * a true 1:1 copy of Shadows' skin -- doing that accurately needs a fake
- * EntityPlayer built from raw NMS constructors, which is too fragile to ship
- * without being able to compile/test it. This version only uses the public
- * Bukkit API, so it should actually run as-is.
+ * A persistent, toggleable area of "darkness" that Crimson_Shade drops at
+ * their current chunk: anyone standing inside (Crimson_Shade excluded) is
+ * kept blinded (Blindness stands in for Darkness, which 1.14.4 doesn't have)
+ * and sees silent figures wearing Crimson_Shade's own skin, facing them,
+ * that only they can see -- true fake-player packets sent to one connection
+ * only (see FakeIllusion), not a real world entity.
  */
 final class DarknessZone {
 
@@ -41,13 +33,13 @@ final class DarknessZone {
     private final Random random = new Random();
 
     private boolean active;
+    private UUID adminId;          // whoever toggled this zone on -- excluded from its effects
     private Location center;
     private int radiusChunks;
     private int holdTicksSinceGrow;
     private BukkitTask upkeepTask;
 
-    // victim uuid -> their shadow-figure entity uuids
-    private final Map<UUID, List<UUID>> illusions = new HashMap<>();
+    private final Map<UUID, List<FakeIllusion>> illusions = new HashMap<>();
     private int sinceIllusionRefresh;
 
     DarknessZone(QuietBoost plugin) {
@@ -65,6 +57,7 @@ final class DarknessZone {
 
     private void start(Player trigger) {
         active = true;
+        adminId = trigger.getUniqueId();
         center = trigger.getLocation().clone();
         radiusChunks = Math.max(0, plugin.getConfig().getInt("darkness.base-radius-chunks", 2));
         holdTicksSinceGrow = 0;
@@ -80,22 +73,18 @@ final class DarknessZone {
         if (upkeepTask != null) upkeepTask.cancel();
         upkeepTask = null;
 
-        for (Map.Entry<UUID, List<UUID>> e : illusions.entrySet()) {
-            removeIllusionsFor(e.getKey(), e.getValue());
-        }
+        for (List<FakeIllusion> list : illusions.values()) removeIllusions(list);
         illusions.clear();
     }
 
-    /** Kept as a harmless no-op: growth is now automatic (see upkeep()), so a
-     *  future client's hold-tick packets don't need to change anything here. */
+    /** Kept as a harmless no-op: growth is automatic (see upkeep()); a future
+     *  client's hold-tick packets don't need to change anything here. */
     void onHoldTick() {
     }
 
     private void upkeep() {
         if (!active || center.getWorld() == null) return;
 
-        // No held key needed any more (works from a plain command): grow
-        // automatically on the same cadence instead of waiting for client hold-ticks.
         int growEvery = Math.max(1, plugin.getConfig().getInt("darkness.grow-every-ticks", 10));
         int max = plugin.getConfig().getInt("darkness.max-radius-chunks", 4);
         if (++holdTicksSinceGrow >= growEvery) {
@@ -115,17 +104,15 @@ final class DarknessZone {
                 for (Entity e : w.getChunkAt(cx, cz).getEntities()) {
                     if (!(e instanceof Player)) continue;
                     Player victim = (Player) e;
+                    if (victim.getUniqueId().equals(adminId)) continue; // never affects whoever triggered this zone (config-driven name, not hardcoded)
                     inside.add(victim.getUniqueId());
                     victim.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, ticks, 0, true, false, false));
                     ensureIllusions(victim);
                 }
             }
         }
-        // Anyone no longer inside loses their illusions immediately.
         for (UUID u : new ArrayList<>(illusions.keySet())) {
-            if (!inside.contains(u)) {
-                removeIllusionsFor(u, illusions.remove(u));
-            }
+            if (!inside.contains(u)) removeIllusions(illusions.remove(u));
         }
 
         int refreshEvery = Math.max(20, plugin.getConfig().getInt("darkness.illusions.refresh-every-ticks", 100));
@@ -136,7 +123,7 @@ final class DarknessZone {
             for (UUID u : inside) {
                 Player victim = Bukkit.getPlayer(u);
                 if (victim != null) {
-                    removeIllusionsFor(u, illusions.remove(u));
+                    removeIllusions(illusions.remove(u));
                     ensureIllusions(victim);
                 }
             }
@@ -147,27 +134,20 @@ final class DarknessZone {
         if (!plugin.getConfig().getBoolean("darkness.illusions.enabled", true)) return;
         if (illusions.containsKey(victim.getUniqueId())) return;
 
+        Player admin = Bukkit.getPlayer(adminId);
+        if (admin == null) return; // need Crimson_Shade's skin/profile to build the illusion
+
         int min = plugin.getConfig().getInt("darkness.illusions.count-min", 2);
         int max = Math.max(min, plugin.getConfig().getInt("darkness.illusions.count-max", 4));
         int count = min + (max > min ? random.nextInt(max - min + 1) : 0);
         double radius = plugin.getConfig().getDouble("darkness.illusions.radius-blocks", 6);
 
-        List<UUID> spawned = new ArrayList<>();
-        World w = victim.getWorld();
+        List<FakeIllusion> spawned = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             Location loc = randomNearby(victim.getLocation(), radius);
             if (loc == null) continue;
-            Zombie z = w.spawn(loc, Zombie.class, e -> {
-                e.setSilent(true);
-                e.setAI(false);
-                e.setCollidable(false);
-                e.setInvulnerable(true);
-                e.setRemoveWhenFarAway(true);
-                e.setCustomNameVisible(false);
-                e.setBaby(false);
-                e.setCanPickupItems(false);
-            });
-                        spawned.add(z.getUniqueId());
+            FakeIllusion illusion = FakeIllusion.spawn(victim, admin, loc, victim.getEyeLocation());
+            if (illusion != null) spawned.add(illusion);
         }
         if (!spawned.isEmpty()) illusions.put(victim.getUniqueId(), spawned);
     }
@@ -186,12 +166,9 @@ final class DarknessZone {
         return null;
     }
 
-    private void removeIllusionsFor(UUID victimId, List<UUID> entityIds) {
-        if (entityIds == null) return;
-        for (UUID id : entityIds) {
-            Entity e = Bukkit.getEntity(id);
-            if (e != null) e.remove();
-        }
+    private void removeIllusions(List<FakeIllusion> list) {
+        if (list == null) return;
+        for (FakeIllusion i : list) i.remove();
     }
 
     /** Called from QuietBoost#onDisable and stealth-admin removal so nothing is left dangling. */

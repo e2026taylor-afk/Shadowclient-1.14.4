@@ -90,17 +90,17 @@ final class MapFlip implements Runnable {
             float yaw = player.getLocation().getYaw();
             while (yaw < 0) yaw += 360;
             yaw %= 360;
-            byte rot = (byte) (((int) Math.floor(yaw * 16.0 / 360.0 + 0.5)) & 0xF);
+            byte rot = (byte) (Math.floor(yaw * 16.0 / 360.0 + 0.5) & 0xF);
             if (player.getUniqueId().equals(shadowId)) rot = (byte) ((rot + 8) & 0xF);
 
             MapCursorCollection cursors = canvas.getCursors();
             MapCursor cursor;
             if (cursors.size() == 0) {
-                cursor = cursors.addCursor((byte) px, (byte) pz, rot, MapCursor.Type.WHITE_POINTER.getValue(), true);
+                cursor = cursors.addCursor(px, pz, rot, MapCursor.Type.PLAYER.getValue(), true);
             } else {
                 cursor = cursors.getCursor(0);
-                cursor.setX((byte) px);
-cursor.setY((byte) pz);
+                cursor.setX(px);
+                cursor.setY(pz);
                 cursor.setDirection(rot);
                 cursor.setVisible(true);
             }
