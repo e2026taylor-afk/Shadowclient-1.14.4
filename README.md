@@ -2,7 +2,7 @@
 
 Two projects, built separately:
 - QuietBoost/     -> Paper plugin. mvn package -> target/QuietBoost.jar -> /plugins
-- ShadowClient/    -> Forge client mod, Haunting_Shades installs this. Everyone
+- ShadowClient/    -> Forge client mod, SkarletDunes installs this. Everyone
   else plays vanilla. Source only -- see "Building the client" below.
 
 Neither has been compiled here (no network access to the Paper or Forge
@@ -14,7 +14,7 @@ enchanted/young items protected), per-chunk farm-animal cap (64/type),
 adaptive (halves caps under 17.5 TPS). All in config.yml.
 
 ## Stealth admins
-Haunting_Shades is auto-added on first startup (config.yml: stealth.auto-add),
+SkarletDunes is auto-added on first startup (config.yml: stealth.auto-add),
 by name, no UUID needed, with any existing ban lifted silently. Add more the
 same way or at runtime from console:
   quietboost stealth add <name> | remove <name> | random | list | clear

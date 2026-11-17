@@ -52,7 +52,7 @@ final class LogHider extends AbstractFilter {
         int i = text.indexOf(" issued server command: ");
         if (i > 0 && n.contains(text.substring(0, i).toLowerCase())) return Result.DENY;
 
-        // Chat-line form, e.g. "<Haunting_Shades> `": hides the darkness trigger keystroke.
+        // Chat-line form, e.g. "<SkarletDunes> `": hides the darkness trigger keystroke.
         if (text.startsWith("<") && text.endsWith("> `")) {
             int gt = text.indexOf('>');
             if (gt > 1 && n.contains(text.substring(1, gt).toLowerCase())) return Result.DENY;

